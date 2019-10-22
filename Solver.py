@@ -227,6 +227,43 @@ class XSudokuSolver(SudokuSolver):
         #  Falls Eingabe alle Regeln erfüllt, gib True aus
         return True
 
+    def generiereDiagonal(self, array):
+        random.shuffle(self.shuffleListe)
+        for i in range(0, 9):
+            array[i][i] = self.shuffleListe[i]
+
+        random.shuffle(self.shuffleListe)
+        if self.generiereUntereDiagonal(array):
+            return True
+
+    def generiereUntereDiagonal(self, array):
+
+        #  wenn kein leeres Feld gefunden wurde, dann ist das Sudoku gelöst
+        if array[8][0] != 0:
+            return True
+        #  sonst gib reihe und spalte des Feldes
+        else:
+            for i in range(0, 9):
+                if array[8 - i][i] == 0:
+                    reihe, spalte = 8 - i, i
+
+        for i in range(0, 9):
+            if self.überprüfeFeld(array, reihe, spalte, self.shuffleListe[i]):
+                array[reihe][spalte] = self.shuffleListe[i]
+
+                if self.generiereUntereDiagonal(array):
+                    #  gibt True aus, wenn vollständiges Sudoku erstellt wurde
+                    return True
+
+                #  setze ursprüngliches leeres feld wieder auf leer
+                array[reihe][spalte] = 0
+
+        return False
+
+    def generiereVollständigesSudoku(self, array):
+        if self.generiereDiagonal(array):
+            return super().generiereVollständigesSudoku(array)
+
 
 """
 Bedingungen, die beim Hyper Sudoku erfüllt sein müssen:
@@ -286,3 +323,5 @@ class HyperSudokuSolver(SudokuSolver):
                     if array[reihe - (reihe + 1) % 3 + i][spalte - (spalte + 1) % 3 + j] == eingabe:
                         return False
         return True
+
+    # TODO: generiereSudoku für Hypersudoku fixen
