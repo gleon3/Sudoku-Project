@@ -220,6 +220,50 @@ class SudokuSolver:
 
         return array
 
+    def gridValid(self, array):
+        for i in range(0, 9):
+            if not self.rowValid(array, i):
+                return False
+            if not self.columnValid(array, i):
+                return False
+        for i in range(0, 7, 3):
+            for j in range(0, 7, 3):
+                if not self.boxValid(array, i, j):
+                    return False
+
+        return True
+
+    def rowValid(self, array, row):
+        elements = []
+        for i in range(0, 9):
+            elements.append(array[row][i])
+        elements.sort()
+        if elements == [1, 2, 3, 4, 5, 6, 7, 8, 9]:
+            return True
+        else:
+            return False
+
+    def columnValid(self, array, column):
+        elements = []
+        for i in range(0, 9):
+            elements.append(array[i][column])
+        elements.sort()
+        if elements == [1, 2, 3, 4, 5, 6, 7, 8, 9]:
+            return True
+        else:
+            return False
+
+    def boxValid(self, array, reihe, spalte):
+        elements = []
+        for i in range(0, 3):
+            for j in range(0, 3):
+                elements.append(array[(reihe - reihe % 3) + i][(spalte - spalte % 3) + j])
+        elements.sort()
+        if elements == [1, 2, 3, 4, 5, 6, 7, 8, 9]:
+            return True
+        else:
+            return False
+
 
 """
 Bedingungen, die beim XSudoku erfüllt sein müssen:
@@ -310,40 +354,18 @@ class XSudokuSolver(SudokuSolver):
                 if not self.boxValid(array, i, j):
                     return False
 
-    def rowValid(self, array, row):
-        elements = []
-        for i in range (0, 9):
-            elements.append(array[row][i])
-        if elements.sort() == [1,2,3,4,5,6,7,8,9]:
-            return True
-        else:
+        if not self.diagonalsValid(array):
             return False
 
-    def columnValid(self, array, column):
-        elements = []
-        for i in range(0, 9):
-            elements.append(array[i][column])
-        if elements.sort() == [1,2,3,4,5,6,7,8,9]:
-            return True
-        else:
-            return False
+        return True
 
     def diagonalsValid(self, array):
         elements = []
         for i in range(0, 9):
             elements.append(array[i][i])
             elements.append(array[i][8-i])
-        if elements.sort() == [1, 1,2, 2,3, 3,4, 4,5, 5,6, 6,7, 7,8, 8,9, 9]:
-            return True
-        else:
-            return False
-
-    def boxValid(self, array, reihe, spalte):
-        elements = []
-        for i in range(0, 3):
-            for j in range(0, 3):
-                elements.append(array[(reihe - reihe % 3) + i][(spalte - spalte % 3) + j])
-        if elements.sort() == [1,2,3,4,5,6,7,8,9]:
+        elements.sort()
+        if elements == [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9]:
             return True
         else:
             return False
@@ -408,15 +430,49 @@ class HyperSudokuSolver(SudokuSolver):
                         return False
         return True
 
-    # TODO: generiereSudoku für Hypersudoku fixen
-    
+    def gridValid(self, array):
+        for i in range(0, 9):
+            if not self.rowValid(array, i):
+                return False
+            if not self.columnValid(array, i):
+                return False
+        for i in range(0, 7, 3):
+            for j in range(0, 7, 3):
+                if not self.boxValid(array, i, j):
+                    return False
 
-solv = XSudokuSolver()
-#solv.generiereDiagonal(solv.grid)
-#solv.generiereUntereDiagonal(solv.grid)
-solv.printSudoku(solv.grid)
-if solv.generiereVollständigesSudoku(solv.grid):
-    solv.printSudoku(solv.grid)
-else:
-    print(solv.possibilities)
-    print("no sol")
+        for i in range(1, 6, 4):
+            for j in range(1, 6, 4):
+                if not self.extraBoxValid(array, i, j):
+                    return False
+
+        return True
+
+    def extraBoxValid(self, array, reihe, spalte):
+        elements = []
+        #  überprüfe Teilfeld obenlinks
+        if 1 <= reihe <= 3 and 1 <= spalte <= 3:
+            for i in range(3):
+                for j in range(3):
+                    elements.append(array[reihe - reihe + 1 + i][spalte - spalte + 1 + j])
+        #  überprüfe Teilfeld obenrechts
+        if 1 <= reihe <= 3 and 5 <= spalte <= 7:
+            for i in range(3):
+                for j in range(3):
+                    elements.append(array[reihe - reihe + 1 + i][spalte - (spalte + 1) % 3 + j])
+        #  überprüfe Teilfeld untenlinks
+        if 5 <= reihe <= 7 and 1 <= spalte <= 3:
+            for i in range(3):
+                for j in range(3):
+                    elements.append(array[reihe - (reihe + 1) % 3 + i][spalte - spalte + 1 + j])
+        #  überprüfe Teilfeld untenrechts
+        if 5 <= reihe <= 7 and 5 <= spalte <= 7:
+            for i in range(3):
+                for j in range(3):
+                    elements.append(array[reihe - (reihe + 1) % 3 + i][spalte - (spalte + 1) % 3 + j])
+
+        elements.sort()
+        if elements == [1, 2, 3, 4, 5, 6, 7, 8, 9]:
+            return True
+        else:
+            return False
