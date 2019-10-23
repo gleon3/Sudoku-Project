@@ -1,6 +1,5 @@
 import random
 
-
 """
 Regeln, die beim Sudoku erfüllt sein müssen:
 1. Jede der 9 Reihen muss alle Zahlen von 1 bis 9 haben.
@@ -20,8 +19,19 @@ class SudokuSolver:
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ]
+        self.possibilities =[
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+                      ]
         self.shuffleListe = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.lösungsAnzahl = 0
         self.backtrack = 0
@@ -32,11 +42,41 @@ class SudokuSolver:
 
     # Funktion, die erstes leeres Feld in array(Sudoku-Gitter) findet
     def findeLeer(self, array):
+        self.possibilities=[
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+            [[], [], [], [], [], [], [], [], []],
+                      ]
+
         for i in range(0, 9):
             for j in range(0, 9):
-                if array[i][j] == 0:
-                    return i, j
-        return None
+                for m in range(1,10):
+                    if (array[i][j] == 0):
+                        if self.überprüfeFeld(array, i, j, m):
+                            self.possibilities[i][j].append(m)
+                    else:
+                        self.possibilities[i][j] = [0,0,0,0,0,0,0,0,0]
+
+        lowest = min([min(r, key=len) for r in self.possibilities], key=len)
+
+        for i in range(0, 9):
+            for j in range(0, 9):
+                if self.possibilities[i][j] == lowest:
+                    reihe, spalte = i, j
+                    break
+            if self.possibilities[i][j] == lowest:
+                break
+
+        if lowest != [0,0,0,0,0,0,0,0,0]:
+            return reihe, spalte
+        else:
+            return None
 
     #  Funktion, um oben genannte Bedingungen für bestimmtes array(was Sudoku-Gitter repräsentiert), Feld(Reihe, Spalte) und
     #  Eingabe zu überprüfen und gibt Wahrheitwert aus, der zeigt, ob die eingabe-Zahl, die Sudoku Regeln erfüllt
@@ -123,11 +163,10 @@ class SudokuSolver:
         #  sonst gib reihe und spalte des Feldes
         else:
             reihe, spalte = self.findeLeer(array)
+            shuffleListe = self.possibilities[reihe][spalte]
+            random.shuffle(shuffleListe)
 
-        #  mische die liste mit den Zahlen von 1 bis 9
-        random.shuffle(self.shuffleListe)
-
-        for i in self.shuffleListe:
+        for i in shuffleListe:
             #  falls überprüfeFeld True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
             #  setze leeres Feld = i
             if self.überprüfeFeld(array, reihe, spalte, i):
@@ -260,9 +299,54 @@ class XSudokuSolver(SudokuSolver):
 
         return False
 
-    def generiereVollständigesSudoku(self, array):
-        if self.generiereDiagonal(array):
-            return super().generiereVollständigesSudoku(array)
+    def gridValid(self, array):
+        for i in range(0, 9):
+            if not self.rowValid(array, i):
+                return False
+            if not self.columnValid(array, i):
+                return False
+        for i in range(0, 7, 3):
+            for j in range(0, 7, 3):
+                if not self.boxValid(array, i, j):
+                    return False
+
+    def rowValid(self, array, row):
+        elements = []
+        for i in range (0, 9):
+            elements.append(array[row][i])
+        if elements.sort() == [1,2,3,4,5,6,7,8,9]:
+            return True
+        else:
+            return False
+
+    def columnValid(self, array, column):
+        elements = []
+        for i in range(0, 9):
+            elements.append(array[i][column])
+        if elements.sort() == [1,2,3,4,5,6,7,8,9]:
+            return True
+        else:
+            return False
+
+    def diagonalsValid(self, array):
+        elements = []
+        for i in range(0, 9):
+            elements.append(array[i][i])
+            elements.append(array[i][8-i])
+        if elements.sort() == [1, 1,2, 2,3, 3,4, 4,5, 5,6, 6,7, 7,8, 8,9, 9]:
+            return True
+        else:
+            return False
+
+    def boxValid(self, array, reihe, spalte):
+        elements = []
+        for i in range(0, 3):
+            for j in range(0, 3):
+                elements.append(array[(reihe - reihe % 3) + i][(spalte - spalte % 3) + j])
+        if elements.sort() == [1,2,3,4,5,6,7,8,9]:
+            return True
+        else:
+            return False
 
 
 """
@@ -325,3 +409,14 @@ class HyperSudokuSolver(SudokuSolver):
         return True
 
     # TODO: generiereSudoku für Hypersudoku fixen
+    
+
+solv = XSudokuSolver()
+#solv.generiereDiagonal(solv.grid)
+#solv.generiereUntereDiagonal(solv.grid)
+solv.printSudoku(solv.grid)
+if solv.generiereVollständigesSudoku(solv.grid):
+    solv.printSudoku(solv.grid)
+else:
+    print(solv.possibilities)
+    print("no sol")
