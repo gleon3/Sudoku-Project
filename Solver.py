@@ -40,7 +40,7 @@ class SudokuSolver:
     def printSudoku(self, array):
         print("\n".join(" ".join(str(cell) for cell in line) for line in array))
 
-    # Funktion, die erstes leeres Feld in array(Sudoku-Gitter) findet
+    # Funktion, das leere Feld mit den wenigsten möglichen einsetzungen in array(Sudoku-Gitter) findet
     def findeLeer(self, array):
         self.possibilities=[
             [[], [], [], [], [], [], [], [], []],
@@ -108,7 +108,7 @@ class SudokuSolver:
         else:
             reihe, spalte = self.findeLeer(array)
 
-        for i in range(1, 10):
+        for i in self.possibilities[reihe][spalte]:
             #  falls überprüfeFeld True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
             #  setze leeres Feld = i
             if self.überprüfeFeld(array, reihe, spalte, i):
@@ -135,7 +135,7 @@ class SudokuSolver:
         else:
             reihe, spalte = self.findeLeer(array)
 
-        for i in range(1, 10):
+        for i in self.possibilities[reihe][spalte]:
             #  falls überprüfeFeld True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
             #  setze leeres Feld = i
             if self.überprüfeFeld(array, reihe, spalte, i):
@@ -476,3 +476,9 @@ class HyperSudokuSolver(SudokuSolver):
             return True
         else:
             return False
+
+
+solv = HyperSudokuSolver()
+if solv.sudokuLösen(solv.grid):
+    solv.printSudoku(solv.grid)
+    print(solv.backtrack)
