@@ -32,17 +32,39 @@ class SudokuSolver:
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
                       ]
-        self.shuffleListe = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.lösungsAnzahl = 0
         self.backtrack = 0
+        
+    def getLösungsAnzahl(self):
+        return self.lösungsAnzahl
+
+    def getBacktrack(self):
+        return self.backtrack
+
+    def getGrid(self):
+        return self.grid
+
+    def getPossibilities(self):
+        return self.possibilities
+
+    def setLösungsAnzahl(self, lösungsAnzahl):
+        self.lösungsAnzahl = lösungsAnzahl
+        
+    def setBacktrack(self, backtrack):
+        self.backtrack = backtrack
+
+    def setGrid(self, grid):
+        self.grid = grid
+
+    def setPossibilities(self, possibilities):
+        self.possibilities = possibilities
 
     # Funktion, die array(Sudoku-Gitter) geordnet als 9x9 Feld ausgibt
     def printSudoku(self, array):
         print("\n".join(" ".join(str(cell) for cell in line) for line in array))
 
-    # Funktion, das leere Feld mit den wenigsten möglichen einsetzungen in array(Sudoku-Gitter) findet
-    def findeLeer(self, array):
-        self.possibilities=[
+    def findeMöglichkeiten(self, array):
+        self.possibilities = [
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
@@ -52,16 +74,20 @@ class SudokuSolver:
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
-                      ]
+        ]
 
         for i in range(0, 9):
             for j in range(0, 9):
-                for m in range(1,10):
-                    if (array[i][j] == 0):
+                for m in range(1, 10):
+                    if array[i][j] == 0:
                         if self.überprüfeFeld(array, i, j, m):
                             self.possibilities[i][j].append(m)
                     else:
-                        self.possibilities[i][j] = [0,0,0,0,0,0,0,0,0]
+                        self.possibilities[i][j] = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    # Funktion, das leere Feld mit den wenigsten möglichen einsetzungen in array(Sudoku-Gitter) findet
+    def findeLeer(self, array):
+        self.findeMöglichkeiten(array)
 
         lowest = min([min(r, key=len) for r in self.possibilities], key=len)
 
@@ -276,7 +302,6 @@ Bedingungen, die beim XSudoku erfüllt sein müssen:
 class XSudokuSolver(SudokuSolver):
     def __init__(self):
         SudokuSolver.__init__(self)
-        self.shuffleAnzahl = 0
 
     #  Funktion, um oben genannte Bedingungen für bestimmtes array(was Sudoku-Gitter repräsentiert), Feld(Reihe, Spalte)
     #  und Eingabe zu überprüfen und gibt Wahrheitwert aus, der zeigt, ob die eingabe-Zahl, die XSudoku Regeln erfüllt
@@ -349,7 +374,6 @@ Bedingungen, die beim Hyper Sudoku erfüllt sein müssen:
 class HyperSudokuSolver(SudokuSolver):
     def __init__(self):
         SudokuSolver.__init__(self)
-        self.shuffleAnzahl = 0
 
     #  Funktion, um oben genannte Bedingungen für bestimmtes array(was Sudoku-Gitter repräsentiert), Feld(Reihe, Spalte)
     #  und Eingabe zu überprüfen und gibt Wahrheitwert aus, der zeigt, ob die eingabe-Zahl, die HyperSudoku Regeln

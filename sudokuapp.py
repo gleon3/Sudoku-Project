@@ -301,7 +301,6 @@ class HyperSudoku(Frame):
             information.config(text="leeres Sudokufeld")
 
         def spielbaresGrid():
-            hypersudoku.shuffleAnzahl = 0
             hypersudoku.grid = [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -331,7 +330,6 @@ class HyperSudoku(Frame):
                 information.config(text="Sudoku gelöst mit " + str(hypersudoku.backtrack) + " Backtracks")
 
         def neuesGrid():
-            hypersudoku.shuffleAnzahl = 0
             hypersudoku.grid = [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
