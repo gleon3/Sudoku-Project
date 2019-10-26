@@ -153,8 +153,7 @@ class SudokuSolver:
         #  Lösen noch möglich war
         return False
 
-        #  Funktion, um vollständig ausgefülltes Sudoku zu generieren
-
+    #  Funktion, um vollständig ausgefülltes Sudoku zu generieren
     def generiereVollständigesSudoku(self, array):
 
         #  wenn kein leeres Feld gefunden wurde, dann ist das Sudoku gelöst
@@ -310,39 +309,6 @@ class XSudokuSolver(SudokuSolver):
         #  Falls Eingabe alle Regeln erfüllt, gib True aus
         return True
 
-    def generiereDiagonal(self, array):
-        random.shuffle(self.shuffleListe)
-        for i in range(0, 9):
-            array[i][i] = self.shuffleListe[i]
-
-        random.shuffle(self.shuffleListe)
-        if self.generiereUntereDiagonal(array):
-            return True
-
-    def generiereUntereDiagonal(self, array):
-
-        #  wenn kein leeres Feld gefunden wurde, dann ist das Sudoku gelöst
-        if array[8][0] != 0:
-            return True
-        #  sonst gib reihe und spalte des Feldes
-        else:
-            for i in range(0, 9):
-                if array[8 - i][i] == 0:
-                    reihe, spalte = 8 - i, i
-
-        for i in range(0, 9):
-            if self.überprüfeFeld(array, reihe, spalte, self.shuffleListe[i]):
-                array[reihe][spalte] = self.shuffleListe[i]
-
-                if self.generiereUntereDiagonal(array):
-                    #  gibt True aus, wenn vollständiges Sudoku erstellt wurde
-                    return True
-
-                #  setze ursprüngliches leeres feld wieder auf leer
-                array[reihe][spalte] = 0
-
-        return False
-
     def gridValid(self, array):
         for i in range(0, 9):
             if not self.rowValid(array, i):
@@ -430,6 +396,67 @@ class HyperSudokuSolver(SudokuSolver):
                         return False
         return True
 
+    def generiereSquares(self, array):
+        liste=[1,2,3,4,5,6,7,8,9]
+
+        c = 0
+        random.shuffle(liste)
+        for i in range(0, 3):
+            for j in range(0, 3):
+                array[i][j] = liste[c]
+                c += 1
+
+        c = 0
+        random.shuffle(liste)
+        for i in range(5, 8):
+            for j in range(5, 8):
+                array[i][j] = liste[c]
+                c+=1
+
+    #  Funktion, um vollständig ausgefülltes Sudoku zu generieren
+    def generiereVollständigesHyperSudoku(self, array):
+        self.generiereSquares(array)
+        if self.generiereVollständigesSudoku(array):
+            return True
+        else:
+            return False
+
+    #  generiert eindeutig lösbares Sudoku mit gegebenen hinweisen
+    def generiereSudoku(self, array, hinweise):
+
+        entferne = 81 - hinweise
+
+        #  erstelle zufälliges gültiges Sudoku
+        if self.generiereVollständigesHyperSudoku(array):
+            #  Felder, die entfernt werden sollen
+            while entferne > 0:
+                #  wähle zufälliges Feld, das noch nicht leer ist
+                reihe = random.randint(0, 8)
+                spalte = random.randint(0, 8)
+                while array[reihe][spalte] == 0:
+                    reihe = random.randint(0, 8)
+                    spalte = random.randint(0, 8)
+                #  merke den Wert des Feldes, falls das Sudoku mehr als eine Lösung hat, wenn man das Feld leert
+                merke = array[reihe][spalte]
+                array[reihe][spalte] = 0
+                entferne -= 1
+
+                #  kopiere array und zähle Lösungen
+                kopieArray = []
+                for i in range(0, 9):
+                    kopieArray.append([])
+                    for j in range(0, 9):
+                        kopieArray[i].append(array[i][j])
+
+                self.lösungsAnzahl = 0
+
+                #  wenn die Anzahl der Lösungen größer ist als 1, dann setze ursprünglichen Wert in leeres Feld
+                if self.mehrereLösungen(kopieArray):
+                    array[reihe][spalte] = merke
+                    entferne += 1
+
+        return array
+
     def gridValid(self, array):
         for i in range(0, 9):
             if not self.rowValid(array, i):
@@ -479,6 +506,6 @@ class HyperSudokuSolver(SudokuSolver):
 
 
 solv = HyperSudokuSolver()
-if solv.sudokuLösen(solv.grid):
+if solv.generiereVollständigesHyperSudoku(solv.grid):
     solv.printSudoku(solv.grid)
-    print(solv.backtrack)
+    print(solv.gridValid(solv.grid))

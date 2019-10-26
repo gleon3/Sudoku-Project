@@ -28,7 +28,7 @@ class Sudoku(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
 
-        sudoku = Solver.Sudoku();
+        sudoku = Solver.SudokuSolver()
 
         parent.title("Sudoku")
         self.sudokuGitter = PhotoImage(file="Sudokugrid.gif")
@@ -140,7 +140,7 @@ class XSudoku(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
 
-        xsudoku = Solver.XSudoku();
+        xsudoku = Solver.XSudokuSolver();
 
         parent.title("XSudoku")
         self.sudokuGitter = PhotoImage(file="XSudokugrid.gif")
@@ -252,7 +252,7 @@ class HyperSudoku(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
 
-        hypersudoku = Solver.HyperSudoku();
+        hypersudoku = Solver.HyperSudokuSolver();
 
         parent.title("HyperSudoku")
         self.sudokuGitter = PhotoImage(file="HyperSudokugrid.gif")
@@ -343,7 +343,7 @@ class HyperSudoku(Frame):
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
-            if hypersudoku.generiereVollständigesSudoku(array=hypersudoku.grid):
+            if hypersudoku.generiereVollständigesHyperSudoku(array=hypersudoku.grid):
                 zeichneSudoku(array=hypersudoku.grid)
                 information.config(text="zufälliges gülitges Sudoku")
 
