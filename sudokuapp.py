@@ -55,7 +55,7 @@ class Commands:
                 self.canvas.create_text(x, y, text=arrayend[i][j], tags="Zahlen", fill=color, font=("Arial", 30))
 
     def leereGrid(self):
-        self.solver.grid = [
+        self.solver.setGrid([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -65,13 +65,13 @@ class Commands:
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ]
+        ])
 
-        self.zeichneSudoku(array=self.solver.grid)
+        self.zeichneSudoku(array=self.solver.getGrid())
         self.information.config(text="leeres Sudokufeld")
 
     def spielbaresGrid(self):
-        self.solver.grid = [
+        self.solver.setGrid([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -81,26 +81,26 @@ class Commands:
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ]
+        ])
 
         hinweise = random.randint(17, 60)
         
-        self.zeichneSudoku(array=self.solver.generiereSudoku(array=self.solver.grid, hinweise=hinweise))
+        self.zeichneSudoku(array=self.solver.generiereSudoku(array=self.solver.getGrid(), hinweise=hinweise))
         self.information.config(text="Sudoku mit " + str(hinweise) + " Hinweisen")
 
     def löseGrid(self):
-        self.solver.backtrack = 0
+        self.solver.setBacktrack(0)
         lösbaresgrid = []
         for i in range(0, 9):
             lösbaresgrid.append([])
             for j in range(0, 9):
                 lösbaresgrid[i].append(self.solver.grid[i][j])
-        if self.solver.sudokuLösen(array=self.solver.grid):
-            self.zeichneGelöstesSudoku(lösbaresgrid, self.solver.grid)
-            self.information.config(text="Sudoku gelöst mit " + str(self.solver.backtrack) + " Backtracks")
+        if self.solver.sudokuLösen(array=self.solver.getGrid()):
+            self.zeichneGelöstesSudoku(lösbaresgrid, self.solver.getGrid())
+            self.information.config(text="Sudoku gelöst mit " + str(self.solver.getBacktrack()) + " Backtracks")
 
     def neuesGrid(self):
-        self.solver.grid = [
+        self.solver.setGrid([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -110,9 +110,9 @@ class Commands:
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ]
-        if self.solver.generiereVollständigesSudoku(array=self.solver.grid):
-            self.zeichneSudoku(array=self.solver.grid)
+        ])
+        if self.solver.generiereVollständigesSudoku(array=self.solver.getGrid()):
+            self.zeichneSudoku(array=self.solver.getGrid())
             self.information.config(text="zufälliges gülitges Sudoku")
 
 
@@ -196,7 +196,7 @@ class HyperSudoku(Frame, Commands):
         self.clearButton.pack(side='bottom')
 
     def neuesGrid(self):
-        self.solver.grid = [
+        self.solver.setGrid([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -206,9 +206,9 @@ class HyperSudoku(Frame, Commands):
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ]
-        if self.solver.generiereVollständigesHyperSudoku(array=self.solver.grid):
-            self.zeichneSudoku(array=self.solver.grid)
+        ])
+        if self.solver.generiereVollständigesHyperSudoku(array=self.solver.getGrid()):
+            self.zeichneSudoku(array=self.solver.getGrid())
             self.information.config(text="zufälliges gülitges Sudoku")
 
 
