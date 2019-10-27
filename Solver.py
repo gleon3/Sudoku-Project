@@ -209,8 +209,28 @@ class SudokuSolver:
         #  Lösen noch möglich war
         return False
 
-    #  generiert eindeutig lösbares Sudoku mit gegebenen hinweisen
+    #  generiert lösbares Sudoku mit gegebenen hinweisen
     def generiereSudoku(self, array, hinweise):
+
+        entferne = 81 - hinweise
+
+        #  erstelle zufälliges gültiges Sudoku
+        if self.generiereVollständigesSudoku(array):
+            #  Felder, die entfernt werden sollen
+            while entferne > 0:
+                #  wähle zufälliges Feld, das noch nicht leer ist
+                reihe = random.randint(0, 8)
+                spalte = random.randint(0, 8)
+                while array[reihe][spalte] == 0:
+                    reihe = random.randint(0, 8)
+                    spalte = random.randint(0, 8)
+                array[reihe][spalte] = 0
+                entferne -= 1
+
+        return array
+
+    #  generiert eindeutig lösbares Sudoku mit gegebenen hinweisen
+    def generiereEindutigesSudoku(self, array, hinweise):
 
         entferne = 81 - hinweise
 
@@ -445,8 +465,28 @@ class HyperSudokuSolver(SudokuSolver):
         else:
             return False
 
-    #  generiert eindeutig lösbares Sudoku mit gegebenen hinweisen
+    #  generiert lösbares Sudoku mit gegebenen hinweisen
     def generiereSudoku(self, array, hinweise):
+
+        entferne = 81 - hinweise
+
+        #  erstelle zufälliges gültiges Sudoku
+        if self.generiereVollständigesHyperSudoku(array):
+            #  Felder, die entfernt werden sollen
+            while entferne > 0:
+                #  wähle zufälliges Feld, das noch nicht leer ist
+                reihe = random.randint(0, 8)
+                spalte = random.randint(0, 8)
+                while array[reihe][spalte] == 0:
+                    reihe = random.randint(0, 8)
+                    spalte = random.randint(0, 8)
+                array[reihe][spalte] = 0
+                entferne -= 1
+
+        return array
+
+    #  generiert eindeutig lösbares Sudoku mit gegebenen hinweisen
+    def generiereEindeutigesSudoku(self, array, hinweise):
 
         entferne = 81 - hinweise
 
