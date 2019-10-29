@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="953747ce-981c-42b0-b086-7ae96f5ac729" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Solver.py" beforeDir="false" afterPath="$PROJECT_DIR$/Solver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/XSudokugrid.gif" beforeDir="false" afterPath="$PROJECT_DIR$/XSudokugrid.gif" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sudokuapp.py" beforeDir="false" afterPath="$PROJECT_DIR$/sudokuapp.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />

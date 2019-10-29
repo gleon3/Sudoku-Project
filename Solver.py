@@ -220,7 +220,7 @@ class SudokuSolver:
         remove = 81 - hints
 
         # generates completed sudoku
-        if self.generate_completed_sudoku(array):
+        if self.generate_completed_hypersudoku(array):
             # do until enough cells are removed (until there are given hints cells left)
             while remove > 0:
                 # choose random cell that is not yet removed

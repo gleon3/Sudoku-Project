@@ -105,9 +105,14 @@ class Commands:
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ])
-        if self.solver.generate_completed_sudoku(array=self.solver.get_grid()):
-            self.draw_sudoku(array=self.solver.get_grid())
-            self.information.config(text="randomly completed valid " + self.sudokutype)
+        if self.sudokutype == "HyperSudoku":
+            if self.solver.generate_completed_hypersudoku(array=self.solver.get_grid()):
+                self.draw_sudoku(array=self.solver.get_grid())
+                self.information.config(text="randomly completed valid " + self.sudokutype)
+        else:
+            if self.solver.generate_completed_sudoku(array=self.solver.get_grid()):
+                self.draw_sudoku(array=self.solver.get_grid())
+                self.information.config(text="randomly completed valid " + self.sudokutype)
 
 
 class Sudoku(Frame):
@@ -121,17 +126,16 @@ class Sudoku(Frame):
         self.canvas.create_image(305, 305, image=self.sudokuGrid)
         self.canvas.pack(side='top')
 
-        self.information = Label(self, text="")
-
-        commands = Commands(solver=Solver.SudokuSolver(), canvas=self.canvas, information=self.information,
-                            sudokutype="Sudoku")
-
         button2 = Button(self, text="HyperSudoku", command=lambda: parent.change_window(HyperSudoku), width=20)
         button2.pack(side='bottom')
         button1 = Button(self, text="XSudoku", command=lambda: parent.change_window(XSudoku), width=20)
         button1.pack(side='bottom')
 
+        self.information = Label(self, text="")
         self.information.pack(side='bottom')
+
+        commands = Commands(solver=Solver.SudokuSolver(), canvas=self.canvas, information=self.information,
+                            sudokutype="Sudoku")
 
         self.completedButton = Button(self, text="completed Sudoku", command=commands.completed_grid, width=20)
         self.completedButton.pack(side='bottom')
@@ -145,7 +149,7 @@ class Sudoku(Frame):
         commands.empty_grid()
 
 
-class XSudoku(Frame, Commands):
+class XSudoku(Frame):
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -180,7 +184,7 @@ class XSudoku(Frame, Commands):
         commands.empty_grid()
 
 
-class HyperSudoku(Frame, Commands):
+class HyperSudoku(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)
 
@@ -191,19 +195,16 @@ class HyperSudoku(Frame, Commands):
         self.canvas.create_image(305, 305, image=self.sudokuGrid)
         self.canvas.pack(side='top')
 
-        self.information = Label(self, text="")
-
-        commands = Commands(solver=Solver.HyperSudokuSolver(), canvas=self.canvas, information=self.information,
-                            sudokutype="HyperSudoku")
-
-        commands.empty_grid()
-
         button2 = Button(self, text="XSudoku", command=lambda: parent.change_window(XSudoku), width=20)
         button2.pack(side='bottom')
         button1 = Button(self, text="Sudoku", command=lambda: parent.change_window(Sudoku), width=20)
         button1.pack(side='bottom')
 
+        self.information = Label(self, text="")
         self.information.pack(side='bottom')
+
+        commands = Commands(solver=Solver.HyperSudokuSolver(), canvas=self.canvas, information=self.information,
+                            sudokutype="HyperSudoku")
 
         self.completedButton = Button(self, text="completed HyperSudoku", command=commands.completed_grid, width=20)
         self.completedButton.pack(side='bottom')
@@ -214,21 +215,7 @@ class HyperSudoku(Frame, Commands):
         self.clearButton = Button(self, text="empty HyperSudoku", command=commands.empty_grid, width=20)
         self.clearButton.pack(side='bottom')
 
-    def completed_grid(self):
-        self.solver.set_grid([
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ])
-        if self.solver.generate_completed_hypersudoku(array=self.solver.get_grid()):
-            self.draw_sudoku(array=self.solver.get_grid())
-            self.information.config(text="randomly completed valid Sudoku")
+        commands.empty_grid()
 
 
 app = App()
