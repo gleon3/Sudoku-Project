@@ -24,17 +24,10 @@ class App(Tk):
 
 
 class Commands:
-    def __init__(self, solver):
+    def __init__(self, solver, canvas, information):
         self.solver = solver
-
-        self.information = Label(self, text="")
-
-        self.canvas = Canvas(self, width=610, height=610)
-
-        self.completedButton = Button(self, text="completed Sudoku", command=self.completed_grid, width=20)
-        self.solveButton = Button(self, text="solve Sudoku", command=self.solve_grid, width=20)
-        self.solvableButton = Button(self, text="solvable Sudoku", command=self.solvable_grid, width=20)
-        self.clearButton = Button(self, text="empty Sudoku", command=self.empty_grid, width=20)
+        self.canvas = canvas
+        self.information = information
 
     def draw_sudoku(self, array):
         self.canvas.delete("digits")
@@ -116,19 +109,22 @@ class Commands:
             self.information.config(text="randomly completed valid Sudoku")
 
 
-class Sudoku(Frame, Commands):
+class Sudoku(Frame):
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
-        Commands.__init__(self, Solver.SudokuSolver())
-
         parent.title("Sudoku")
 
         self.sudokuGrid = PhotoImage(file="Sudokugrid.gif")
+        self.canvas = Canvas(self, width=610, height=610)
         self.canvas.create_image(305, 305, image=self.sudokuGrid)
         self.canvas.pack(side='top')
 
-        self.empty_grid()
+        self.information = Label(self, text="")
+
+        commands = Commands(Solver.SudokuSolver(), self.canvas, self.information)
+
+        commands.empty_grid()
 
         button2 = Button(self, text="HyperSudoku", command=lambda: parent.change_window(HyperSudoku), width=20)
         button2.pack(side='bottom')
@@ -137,9 +133,13 @@ class Sudoku(Frame, Commands):
 
         self.information.pack(side='bottom')
 
+        self.completedButton = Button(self, text="completed Sudoku", command=commands.completed_grid, width=20)
         self.completedButton.pack(side='bottom')
+        self.solvableButton = Button(self, text="solvable Sudoku", command=commands.solvable_grid, width=20)
         self.solvableButton.pack(side='bottom')
+        self.solveButton = Button(self, text="solve Sudoku", command=commands.solve_grid, width=20)
         self.solveButton.pack(side='bottom')
+        self.clearButton = Button(self, text="empty Sudoku", command=commands.empty_grid, width=20)
         self.clearButton.pack(side='bottom')
 
 
@@ -147,15 +147,19 @@ class XSudoku(Frame, Commands):
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
-        Commands.__init__(self, Solver.XSudokuSolver())
 
         parent.title("XSudoku")
 
         self.sudokuGrid = PhotoImage(file="XSudokugrid.gif")
+        self.canvas = Canvas(self, width=610, height=610)
         self.canvas.create_image(305, 305, image=self.sudokuGrid)
         self.canvas.pack(side='top')
 
-        self.empty_grid()
+        self.information = Label(self, text="")
+
+        commands = Commands(Solver.XSudokuSolver(), self.canvas, self.information)
+
+        commands.empty_grid()
 
         button2 = Button(self, text="HyperSudoku", command=lambda: parent.change_window(HyperSudoku), width=20)
         button2.pack(side='bottom')
@@ -164,24 +168,32 @@ class XSudoku(Frame, Commands):
 
         self.information.pack(side='bottom')
 
+        self.completedButton = Button(self, text="completed XSudoku", command=commands.completed_grid, width=20)
         self.completedButton.pack(side='bottom')
+        self.solvableButton = Button(self, text="solvable XSudoku", command=commands.solvable_grid, width=20)
         self.solvableButton.pack(side='bottom')
+        self.solveButton = Button(self, text="solve XSudoku", command=commands.solve_grid, width=20)
         self.solveButton.pack(side='bottom')
+        self.clearButton = Button(self, text="empty XSudoku", command=commands.empty_grid, width=20)
         self.clearButton.pack(side='bottom')
 
 
 class HyperSudoku(Frame, Commands):
     def __init__(self, parent):
         Frame.__init__(self, parent)
-        Commands.__init__(self, Solver.HyperSudokuSolver())
 
         parent.title("HyperSudoku")
 
         self.sudokuGrid = PhotoImage(file="HyperSudokugrid.gif")
+        self.canvas = Canvas(self, width=610, height=610)
         self.canvas.create_image(305, 305, image=self.sudokuGrid)
         self.canvas.pack(side='top')
 
-        self.empty_grid()
+        self.information = Label(self, text="")
+
+        commands = Commands(Solver.HyperSudokuSolver(), self.canvas, self.information)
+
+        commands.empty_grid()
 
         button2 = Button(self, text="XSudoku", command=lambda: parent.change_window(XSudoku), width=20)
         button2.pack(side='bottom')
@@ -190,9 +202,13 @@ class HyperSudoku(Frame, Commands):
 
         self.information.pack(side='bottom')
 
+        self.completedButton = Button(self, text="completed HyperSudoku", command=commands.completed_grid, width=20)
         self.completedButton.pack(side='bottom')
+        self.solvableButton = Button(self, text="solvable HyperSudoku", command=commands.solvable_grid, width=20)
         self.solvableButton.pack(side='bottom')
+        self.solveButton = Button(self, text="solve HyperSudoku", command=commands.solve_grid, width=20)
         self.solveButton.pack(side='bottom')
+        self.clearButton = Button(self, text="empty HyperSudoku", command=commands.empty_grid, width=20)
         self.clearButton.pack(side='bottom')
 
     def completed_grid(self):
