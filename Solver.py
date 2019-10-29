@@ -31,7 +31,7 @@ class SudokuSolver:
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
-                      ]
+        ]
         self.lösungsAnzahl = 0
         self.backtrack = 0
         
@@ -83,23 +83,21 @@ class SudokuSolver:
                         if self.überprüfeFeld(array, i, j, m):
                             self.possibilities[i][j].append(m)
                     else:
-                        self.possibilities[i][j] = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+                        self.possibilities[i][j] = []
 
     # Funktion, das leere Feld mit den wenigsten möglichen einsetzungen in array(Sudoku-Gitter) findet
     def findeLeer(self, array):
         self.findeMöglichkeiten(array)
 
-        lowest = min([min(r, key=len) for r in self.possibilities], key=len)
+        lowestLength = 10
 
         for i in range(0, 9):
-            for j in range(0, 9):
-                if self.possibilities[i][j] == lowest:
+            for j in range(0,9):
+                if array[i][j] ==0 and len(self.possibilities[i][j]) < lowestLength:
+                    lowestLength = len(self.possibilities[i][j])
                     reihe, spalte = i, j
-                    break
-            if self.possibilities[i][j] == lowest:
-                break
 
-        if lowest != [0,0,0,0,0,0,0,0,0]:
+        if lowestLength != 10:
             return reihe, spalte
         else:
             return None
@@ -569,7 +567,7 @@ class HyperSudokuSolver(SudokuSolver):
             return False
 
 
-solv = HyperSudokuSolver()
-if solv.generiereVollständigesHyperSudoku(solv.grid):
+solv = SudokuSolver()
+if solv.generiereVollständigesSudoku(solv.grid):
     solv.printSudoku(solv.grid)
     print(solv.gridValid(solv.grid))
