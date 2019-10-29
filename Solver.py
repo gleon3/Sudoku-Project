@@ -1,13 +1,14 @@
 import random
 
 """
-Regeln, die beim Sudoku erfüllt sein müssen:
-1. Jede der 9 Reihen muss alle Zahlen von 1 bis 9 haben.
-2. Jede der 9 Spalten muss alle Zahlen von 1 bis 9 haben.
-3. Jedes der 9 3x3 Teilfelder muss alle Zahlen von 1 bis 9 haben.
+conditions that have to be fulfilled in Sudoku:
+1. each of the 9 rows has to contain all of the digits from 1 to 9.
+2. each of the 9 columns has to contain all of the digits from 1 to 9.
+3. each of the 9 3x3-subgrids has to contain all of the digits from 1 to 9.
 """
 
 
+# class that contains the functionalities to solve and generate Sudokus
 class SudokuSolver:
     def __init__(self):
         self.grid = [
@@ -21,7 +22,7 @@ class SudokuSolver:
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ]
-        self.possibilities =[
+        self.possibilities = [
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
@@ -32,38 +33,39 @@ class SudokuSolver:
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
         ]
-        self.lösungsAnzahl = 0
+        self.solutionCount = 0
         self.backtrack = 0
-        
-    def getLösungsAnzahl(self):
-        return self.lösungsAnzahl
 
-    def getBacktrack(self):
+    def get_solution_count(self):
+        return self.solutionCount
+
+    def get_backtrack(self):
         return self.backtrack
 
-    def getGrid(self):
+    def get_grid(self):
         return self.grid
 
-    def getPossibilities(self):
+    def get_possibilities(self):
         return self.possibilities
 
-    def setLösungsAnzahl(self, lösungsAnzahl):
-        self.lösungsAnzahl = lösungsAnzahl
-        
-    def setBacktrack(self, backtrack):
+    def set_solution_count(self, solutioncount):
+        self.solutionCount = solutioncount
+
+    def set_backtrack(self, backtrack):
         self.backtrack = backtrack
 
-    def setGrid(self, grid):
+    def set_grid(self, grid):
         self.grid = grid
 
-    def setPossibilities(self, possibilities):
+    def set_possibilities(self, possibilities):
         self.possibilities = possibilities
 
-    # Funktion, die array(Sudoku-Gitter) geordnet als 9x9 Feld ausgibt
-    def printSudoku(self, array):
+    # method to print out array (sudoku grid) user-friendly
+    def print_sudoku(self, array):
         print("\n".join(" ".join(str(cell) for cell in line) for line in array))
 
-    def findeMöglichkeiten(self, array):
+    # method to find possible candidates for array (sudoku grid) for each cell
+    def find_possibilities(self, array):
         self.possibilities = [
             [[], [], [], [], [], [], [], [], []],
             [[], [], [], [], [], [], [], [], []],
@@ -80,203 +82,211 @@ class SudokuSolver:
             for j in range(0, 9):
                 for m in range(1, 10):
                     if array[i][j] == 0:
-                        if self.überprüfeFeld(array, i, j, m):
+                        if self.check_cell(array, i, j, m):
                             self.possibilities[i][j].append(m)
-                    else:
-                        self.possibilities[i][j] = []
 
-    # Funktion, das leere Feld mit den wenigsten möglichen einsetzungen in array(Sudoku-Gitter) findet
-    def findeLeer(self, array):
-        self.findeMöglichkeiten(array)
+    # method to find empty cell with least possible candidates for an array (sudoku grid),
+    # returns the row and column if empty cell was found, returns None otherwise
+    def find_empty(self, array):
+        self.find_possibilities(array)
 
-        lowestLength = 10
+        lowestlength = 10
 
         for i in range(0, 9):
-            for j in range(0,9):
-                if array[i][j] ==0 and len(self.possibilities[i][j]) < lowestLength:
-                    lowestLength = len(self.possibilities[i][j])
-                    reihe, spalte = i, j
+            for j in range(0, 9):
+                if array[i][j] == 0 and len(self.possibilities[i][j]) < lowestlength:
+                    lowestlength = len(self.possibilities[i][j])
+                    row, column = i, j
 
-        if lowestLength != 10:
-            return reihe, spalte
+        if lowestlength != 10:
+            return row, column
         else:
             return None
 
-    #  Funktion, um oben genannte Bedingungen für bestimmtes array(was Sudoku-Gitter repräsentiert), Feld(Reihe, Spalte) und
-    #  Eingabe zu überprüfen und gibt Wahrheitwert aus, der zeigt, ob die eingabe-Zahl, die Sudoku Regeln erfüllt
-    def überprüfeFeld(self, array, reihe, spalte, eingabe):
+    # method to check if a cell (row, column) of an array (sudoku grid) fulfills sudoku conditions listed above for
+    # given input
+    # returns True if it is and False otherwise
+    def check_cell(self, array, row, column, _input):
 
-        #  überprüfe, ob eingabe-Zahl, die Reihenregel (1.) erfüllt -> falls nicht gib False aus
+        # check if input fulfills row condition (1.) -> if not return False
         for i in range(0, 9):
-            if array[reihe][i] == eingabe:
+            if array[row][i] == _input:
                 return False
-        #  überprüfe, ob eingabe-Zahl, die Spaltenregel (2.) erfüllt -> falls nicht gib False aus
+        # check if input fulfills column condition (2.) -> if not return False
         for i in range(0, 9):
-            if array[i][spalte] == eingabe:
+            if array[i][column] == _input:
                 return False
-        #  überprüfe, ob eingabe-Zahl, die Teilfelder-Regel (3.) erfüllt -> falls nicht gib False aus
+        # check if input fulfills subgrid condition (3.) -> if not return False
         for i in range(0, 3):
             for j in range(0, 3):
-                if array[(reihe - reihe % 3) + i][(spalte - spalte % 3) + j] == eingabe:
+                if array[(row - row % 3) + i][(column - column % 3) + j] == _input:
                     return False
+        # if input fulfills all conditions then return True
         return True
 
-    #  Funktion, die das Sudoku(als Array dargestellt) löst, falls es mehr als eine Lösung gibt wird die zweite Lösung
-    #  ausgegeben, die der Algorithmus findet
-    def sudokuLösen(self, array):
+    # method that solves sudoku (represented by array)
+    # returns True if first solution was found, if no solution was found returns False
+    def solve_sudoku(self, array):
 
-        #  wenn kein leeres Feld gefunden wurde, dann ist das Sudoku gelöst
-        if not self.findeLeer(array):
+        # if no empty cell was found, then return True, which means sudoku is solved,
+        # otherwise save row and column of the empty cell
+        if not self.find_empty(array):
             return True
-        #  sonst gib reihe und spalte des Feldes
         else:
-            reihe, spalte = self.findeLeer(array)
+            row, column = self.find_empty(array)
 
-        for i in self.possibilities[reihe][spalte]:
-            #  falls überprüfeFeld True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
+        #
+        for i in self.possibilities[row][column]:
+            #  falls check_cell True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
             #  setze leeres Feld = i
-            if self.überprüfeFeld(array, reihe, spalte, i):
-                array[reihe][spalte] = i
+            if self.check_cell(array, row, column, i):
+                array[row][column] = i
 
                 #  falls rekursion zu einem Ende kommt, d.h kein leeres feld mehr gefunden ist, dann ist sudoku gelöst
-                if self.sudokuLösen(array):
+                if self.solve_sudoku(array):
                     return True
 
                 #  setze ursprüngliches leeres feld wieder auf leer
-                array[reihe][spalte] = 0
+                array[row][column] = 0
         #  alle Zahlen für leeres Feld probiert und keine erfüllt die Sudoku-Regeln, d.h gehe zurück zu Feld, wo das
         #  Lösen noch möglich war
         self.backtrack += 1
         return False
 
     #  Funktion, die True zurückgibt, wenn es mehr als eine Lösung gibt
-    def mehrereLösungen(self, array):
+    def has_multiple_solutions(self, array):
         #  wenn kein leeres Feld gefunden wurde, dann ist das Sudoku gelöst
-        if not self.findeLeer(array):
-            self.lösungsAnzahl += 1
+        if not self.find_empty(array):
+            self.solutionCount += 1
             return True
-        #  sonst gib reihe und spalte des Feldes
+        #  sonst gib row und column des Feldes
         else:
-            reihe, spalte = self.findeLeer(array)
+            row, column = self.find_empty(array)
 
-        for i in self.possibilities[reihe][spalte]:
-            #  falls überprüfeFeld True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
+        for i in self.possibilities[row][column]:
+            #  falls check_cell True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
             #  setze leeres Feld = i
-            if self.überprüfeFeld(array, reihe, spalte, i):
-                array[reihe][spalte] = i
+            if self.check_cell(array, row, column, i):
+                array[row][column] = i
 
                 #  falls rekursion zu einem Ende kommt, d.h kein leeres feld mehr gefunden ist, dann ist sudoku gelöst,
-                #  also erhöht sich lösungsAnzahl um 1
-                if self.mehrereLösungen(array):
-                    if self.lösungsAnzahl >= 2:
+                #  also erhöht sich solutionCount um 1
+                if self.has_multiple_solutions(array):
+                    if self.solutionCount >= 2:
                         return True
 
                 #  setze ursprüngliches leeres feld wieder auf leer
-                array[reihe][spalte] = 0
+                array[row][column] = 0
         #  alle Zahlen für leeres Feld probiert und keine erfüllt die Sudoku-Regeln, d.h gehe zurück zu Feld, wo das
         #  Lösen noch möglich war
         return False
 
-    #  Funktion, um vollständig ausgefülltes Sudoku zu generieren
-    def generiereVollständigesSudoku(self, array):
+    # method that generates a randomly completed sudoku (represented by array)
+    # returns True if a sudoku was generated
+    def generate_completed_sudoku(self, array):
 
         #  wenn kein leeres Feld gefunden wurde, dann ist das Sudoku gelöst
-        if not self.findeLeer(array):
+        if not self.find_empty(array):
             return True
-        #  sonst gib reihe und spalte des Feldes
+        #  sonst gib row und column des Feldes
         else:
-            reihe, spalte = self.findeLeer(array)
-            shuffleListe = self.possibilities[reihe][spalte]
-            random.shuffle(shuffleListe)
+            row, column = self.find_empty(array)
+            shuffleliste = self.possibilities[row][column]
+            random.shuffle(shuffleliste)
 
-        for i in shuffleListe:
-            #  falls überprüfeFeld True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
+        for i in shuffleliste:
+            #  falls check_cell True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
             #  setze leeres Feld = i
-            if self.überprüfeFeld(array, reihe, spalte, i):
-                array[reihe][spalte] = i
+            if self.check_cell(array, row, column, i):
+                array[row][column] = i
 
                 #  falls rekursion zu einem Ende kommt, d.h kein leeres feld mehr gefunden ist, dann ist sudoku gelöst, also
                 #  wurde ein vollständiges Sudoku erstellt
-                if self.generiereVollständigesSudoku(array):
+                if self.generate_completed_sudoku(array):
                     #  gibt True aus, wenn vollständiges Sudoku erstellt wurde
                     return True
 
                 #  setze ursprüngliches leeres feld wieder auf leer
-                array[reihe][spalte] = 0
+                array[row][column] = 0
         #  alle Zahlen für leeres Feld probiert und keine erfüllt die Sudoku-Regeln, d.h gehe zurück zu Feld, wo das
         #  Lösen noch möglich war
         return False
 
-    #  generiert lösbares Sudoku mit gegebenen hinweisen
-    def generiereSudoku(self, array, hinweise):
+    # method that generates a solvable sudoku (represented by array) with given hints
+    # returns the array that was generated
+    def generate_solvable_sudoku(self, array, hints):
 
-        entferne = 81 - hinweise
+        # cells to remove are total cells (81) - hints
+        remove = 81 - hints
 
-        #  erstelle zufälliges gültiges Sudoku
-        if self.generiereVollständigesSudoku(array):
-            #  Felder, die entfernt werden sollen
-            while entferne > 0:
-                #  wähle zufälliges Feld, das noch nicht leer ist
-                reihe = random.randint(0, 8)
-                spalte = random.randint(0, 8)
-                while array[reihe][spalte] == 0:
-                    reihe = random.randint(0, 8)
-                    spalte = random.randint(0, 8)
-                array[reihe][spalte] = 0
-                entferne -= 1
+        # generates completed sudoku
+        if self.generate_completed_hypersudoku(array):
+            # do until enough cells are removed (until there are given hints cells left)
+            while remove > 0:
+                # choose random cell that is not yet removed
+                row = random.randint(0, 8)
+                column = random.randint(0, 8)
+                while array[row][column] == 0:
+                    row = random.randint(0, 8)
+                    column = random.randint(0, 8)
+                array[row][column] = 0
+                remove -= 1
 
         return array
 
-    #  generiert eindeutig lösbares Sudoku mit gegebenen hinweisen
-    def generiereEindutigesSudoku(self, array, hinweise):
+    # method that generates a uniquely solvable sudoku (represented by array) with given hints
+    # returns the array that was generated
+    def generate_unique_sudoku(self, array, hints):
 
-        entferne = 81 - hinweise
+        # cells to remove are total cells (81) - hints
+        remove = 81 - hints
 
-        #  erstelle zufälliges gültiges Sudoku
-        if self.generiereVollständigesSudoku(array):
-            #  Felder, die entfernt werden sollen
-            while entferne > 0:
-                #  wähle zufälliges Feld, das noch nicht leer ist
-                reihe = random.randint(0, 8)
-                spalte = random.randint(0, 8)
-                while array[reihe][spalte] == 0:
-                    reihe = random.randint(0, 8)
-                    spalte = random.randint(0, 8)
-                #  merke den Wert des Feldes, falls das Sudoku mehr als eine Lösung hat, wenn man das Feld leert
-                merke = array[reihe][spalte]
-                array[reihe][spalte] = 0
-                entferne -= 1
+        # generates completed sudoku
+        if self.generate_completed_sudoku(array):
+            # do until enough cells are removed (until there are given hints cells left)
+            while remove > 0:
+                # choose random cell that is not yet removed
+                row = random.randint(0, 8)
+                column = random.randint(0, 8)
+                while array[row][column] == 0:
+                    row = random.randint(0, 8)
+                    column = random.randint(0, 8)
+                # remember value of removed cell in case sudoku has more than one solution if cell is emptied
+                remember = array[row][column]
+                array[row][column] = 0
+                remove -= 1
 
-                #  kopiere array und zähle Lösungen
-                kopieArray = []
+                # copy array as has_multiple_solutions has side effects, it changes the array parameter
+                arraycopy = []
                 for i in range(0, 9):
-                    kopieArray.append([])
+                    arraycopy.append([])
                     for j in range(0, 9):
-                        kopieArray[i].append(array[i][j])
+                        arraycopy[i].append(array[i][j])
 
-                self.lösungsAnzahl = 0
+                self.solutionCount = 0
 
-                #  wenn die Anzahl der Lösungen größer ist als 1, dann setze ursprünglichen Wert in leeres Feld
-                if self.mehrereLösungen(kopieArray):
-                    array[reihe][spalte] = merke
-                    entferne += 1
+                # if sudoku has multiple solutions, put initial value in empty field and increase remove by one as
+                # no cell was removed in that case
+                if self.has_multiple_solutions(arraycopy):
+                    array[row][column] = remember
+                    remove += 1
 
         return array
 
-    def gridValid(self, array):
+    def grid_is_valid(self, array):
         for i in range(0, 9):
-            if not self.rowValid(array, i):
+            if not self.row_is_valid(array, i):
                 return False
-            if not self.columnValid(array, i):
+            if not self.column_is_valid(array, i):
                 return False
         for i in range(0, 7, 3):
             for j in range(0, 7, 3):
-                if not self.boxValid(array, i, j):
+                if not self.box_is_valid(array, i, j):
                     return False
 
         return True
 
-    def rowValid(self, array, row):
+    def row_is_valid(self, array, row):
         elements = []
         for i in range(0, 9):
             elements.append(array[row][i])
@@ -286,7 +296,7 @@ class SudokuSolver:
         else:
             return False
 
-    def columnValid(self, array, column):
+    def column_is_valid(self, array, column):
         elements = []
         for i in range(0, 9):
             elements.append(array[i][column])
@@ -296,11 +306,11 @@ class SudokuSolver:
         else:
             return False
 
-    def boxValid(self, array, reihe, spalte):
+    def box_is_valid(self, array, row, column):
         elements = []
         for i in range(0, 3):
             for j in range(0, 3):
-                elements.append(array[(reihe - reihe % 3) + i][(spalte - spalte % 3) + j])
+                elements.append(array[(row - row % 3) + i][(column - column % 3) + j])
         elements.sort()
         if elements == [1, 2, 3, 4, 5, 6, 7, 8, 9]:
             return True
@@ -309,70 +319,73 @@ class SudokuSolver:
 
 
 """
-Bedingungen, die beim XSudoku erfüllt sein müssen:
-1. Jede der 9 Reihen muss alle Zahlen von 1 bis 9 haben.
-2. Jede der 9 Spalten muss alle Zahlen von 1 bis 9 haben.
-3. Jedes der 9 3x3 Teilfelder muss alle Zahlen von 1 bis 9 haben.
-4. Jede der Hauptdiagonalen muss alle Zahlen von 1 bis 9 haben.
+conditions that have to be fulfilled in XSudoku:
+1. each of the 9 rows has to contain all of the digits from 1 to 9.
+2. each of the 9 columns has to contain all of the digits from 1 to 9.
+3. each of the 9 3x3-subgrids has to contain all of the digits from 1 to 9.
+4. both of the main diagonals has to contain all of the digits from 1 to 9.
 """
 
 
+# class that contains the functionalities to solve and generate XSudokus, inherits most functionalities from
+# SudokuSolver
 class XSudokuSolver(SudokuSolver):
     def __init__(self):
         SudokuSolver.__init__(self)
 
-    #  Funktion, um oben genannte Bedingungen für bestimmtes array(was Sudoku-Gitter repräsentiert), Feld(Reihe, Spalte)
-    #  und Eingabe zu überprüfen und gibt Wahrheitwert aus, der zeigt, ob die eingabe-Zahl, die XSudoku Regeln erfüllt
-    def überprüfeFeld(self, array, reihe, spalte, eingabe):
+    # method to check if a cell (row, column) of an array (sudoku grid) fulfills xsudoku conditions listed above for
+    # given input
+    # returns True if it is and False otherwise
+    def check_cell(self, array, row, column, _input):
 
-        #  überprüfe, ob eingabe-Zahl, die Reihenregel (1.)  -> falls nicht gib False aus
+        # check if input fulfills row condition (1.) -> if not return False
         for i in range(0, 9):
-            if array[reihe][i] == eingabe:
+            if array[row][i] == _input:
                 return False
-        #  überprüfe, ob eingabe-Zahl, die Spaltenregel erfüllt (2.) -> falls nicht gib False aus
+        # check if input fulfills column condition (2.) -> if not return False
         for i in range(0, 9):
-            if array[i][spalte] == eingabe:
+            if array[i][column] == _input:
                 return False
-        #  überprüfe, ob eingabe-Zahl, die Teilfelder-Regel erfüllt (3.) -> falls nicht gib False aus
+        # check if input fulfills subgrid condition (3.) -> if not return False
         for i in range(0, 3):
             for j in range(0, 3):
-                if array[(reihe - reihe % 3) + i][(spalte - spalte % 3) + j] == eingabe:
+                if array[(row - row % 3) + i][(column - column % 3) + j] == _input:
                     return False
-        #  überprüfe, ob eingabe-Zahl, die Hauptdiagonalen-Regel erfüllt -> falls nicht gib False aus
-        #  obere Diagonale
-        if reihe == spalte:
+        # check if input fulfills main diagonal condition (4.) -> if not return False
+        # upper main diagonal
+        if row == column:
             for i in range(0, 9):
-                if array[i][i] == eingabe:
+                if array[i][i] == _input:
                     return False
-        #  untere Diagonale
-        if reihe + spalte == 8:
+        # bottom main diagonal
+        if row + column == 8:
             for i in range(0, 9):
-                if array[8 - i][i] == eingabe:
+                if array[8 - i][i] == _input:
                     return False
-        #  Falls Eingabe alle Regeln erfüllt, gib True aus
+        # if input fulfills all conditions then return True
         return True
 
-    def gridValid(self, array):
+    def grid_is_valid(self, array):
         for i in range(0, 9):
-            if not self.rowValid(array, i):
+            if not self.row_is_valid(array, i):
                 return False
-            if not self.columnValid(array, i):
+            if not self.column_is_valid(array, i):
                 return False
         for i in range(0, 7, 3):
             for j in range(0, 7, 3):
-                if not self.boxValid(array, i, j):
+                if not self.box_is_valid(array, i, j):
                     return False
 
-        if not self.diagonalsValid(array):
+        if not self.diagonals_are_valid(array):
             return False
 
         return True
 
-    def diagonalsValid(self, array):
+    def diagonals_are_valid(self, array):
         elements = []
         for i in range(0, 9):
             elements.append(array[i][i])
-            elements.append(array[i][8-i])
+            elements.append(array[i][8 - i])
         elements.sort()
         if elements == [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9]:
             return True
@@ -381,66 +394,72 @@ class XSudokuSolver(SudokuSolver):
 
 
 """
-Bedingungen, die beim Hyper Sudoku erfüllt sein müssen:
-1. Jede der 9 Reihen muss alle Zahlen von 1 bis 9 haben.
-2. Jede der 9 Spalten muss alle Zahlen von 1 bis 9 haben.
-3. Jedes der 9 3x3 Teilfelder muss alle Zahlen von 1 bis 9 haben.
-4. Jedes der 4 extra 3x3 Teilfelder muss alle Zahlen von 1 bis 9 haben
+conditions that have to be fulfilled in Sudoku:
+1. each of the 9 rows has to contain all of the digits from 1 to 9.
+2. each of the 9 columns has to contain all of the digits from 1 to 9.
+3. each of the 9 3x3-subgrids has to contain all of the digits from 1 to 9.
+4. each of the 4 additional interior 3x3 subgrids has to contain all of the digits from 1 to 9.
 """
 
 
+# class that contains the functionalities to solve and generate HyperSudokus, inherits most functionalities from
+# SudokuSolver
 class HyperSudokuSolver(SudokuSolver):
     def __init__(self):
         SudokuSolver.__init__(self)
 
-    #  Funktion, um oben genannte Bedingungen für bestimmtes array(was Sudoku-Gitter repräsentiert), Feld(Reihe, Spalte)
-    #  und Eingabe zu überprüfen und gibt Wahrheitwert aus, der zeigt, ob die eingabe-Zahl, die HyperSudoku Regeln
-    #  erfüllt
-    def überprüfeFeld(self, array, reihe, spalte, eingabe):
+    # method to check if a cell (row, column) of an array (sudoku grid) fulfills hypersudoku conditions listed above for
+    # given input
+    # returns True if it is and False otherwise
+    def check_cell(self, array, row, column, _input):
 
-        #  überprüfe, ob eingabe-Zahl, die Reihenregel erfüllt (1.) -> falls nicht gib False aus
+        # check if input fulfills row condition (1.) -> if not return False
         for i in range(0, 9):
-            if array[reihe][i] == eingabe:
+            if array[row][i] == _input:
                 return False
-        #  überprüfe, ob eingabe-Zahl, die Spaltenregel erfüllt (2.) -> falls nicht gib False aus
+        # check if input fulfills column condition (2.) -> if not return False
         for i in range(0, 9):
-            if array[i][spalte] == eingabe:
+            if array[i][column] == _input:
                 return False
-        #  überprüfe, ob eingabe-Zahl, die Teilfelder-Regel erfüllt (3.) -> falls nicht gib False aus
+        # check if input fulfills subgrid condition (3.) -> if not return False
         for i in range(0, 3):
             for j in range(0, 3):
-                if array[(reihe - reihe % 3) + i][(spalte - spalte % 3) + j] == eingabe:
+                if array[(row - row % 3) + i][(column - column % 3) + j] == _input:
                     return False
-        #  überpüfe, ob eingabe-Zahl, die extra Teilfelder-Regel (4.) erfüllt -> falls nicht gib False aus
-        #  überprüfe Teilfeld obenlinks
-        if 1 <= reihe <= 3 and 1 <= spalte <= 3:
+        # check if input fullfills additional suubgrid condition (4.) -> if not return False
+        # additional subgrid top left
+        if 1 <= row <= 3 and 1 <= column <= 3:
             for i in range(3):
                 for j in range(3):
-                    if array[reihe - reihe + 1 + i][spalte - spalte + 1 + j] == eingabe:
+                    if array[row - row + 1 + i][column - column + 1 + j] == _input:
                         return False
-        #  überprüfe Teilfeld obenrechts
-        if 1 <= reihe <= 3 and 5 <= spalte <= 7:
+        # additional subgrid top right
+        if 1 <= row <= 3 and 5 <= column <= 7:
             for i in range(3):
                 for j in range(3):
-                    if array[reihe - reihe + 1 + i][spalte - (spalte + 1) % 3 + j] == eingabe:
+                    if array[row - row + 1 + i][column - (column + 1) % 3 + j] == _input:
                         return False
-        #  überprüfe Teilfeld untenlinks
-        if 5 <= reihe <= 7 and 1 <= spalte <= 3:
+        # additional subgrid bottom left
+        if 5 <= row <= 7 and 1 <= column <= 3:
             for i in range(3):
                 for j in range(3):
-                    if array[reihe - (reihe + 1) % 3 + i][spalte - spalte + 1 + j] == eingabe:
+                    if array[row - (row + 1) % 3 + i][column - column + 1 + j] == _input:
                         return False
-        #  überprüfe Teilfeld untenrechts
-        if 5 <= reihe <= 7 and 5 <= spalte <= 7:
+        # additional subgrid bottom right
+        if 5 <= row <= 7 and 5 <= column <= 7:
             for i in range(3):
                 for j in range(3):
-                    if array[reihe - (reihe + 1) % 3 + i][spalte - (spalte + 1) % 3 + j] == eingabe:
+                    if array[row - (row + 1) % 3 + i][column - (column + 1) % 3 + j] == _input:
                         return False
+        # if input fulfills all conditions then return True
         return True
 
-    def generiereSquares(self, array):
-        liste=[1,2,3,4,5,6,7,8,9]
+    # method that generates top left subgrid and bottom left additional subgrid randomly
+    # returns the generated array
+    def generate_squares(self, array):
+        liste = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+        # generates top left subgrid randomly
         c = 0
         random.shuffle(liste)
         for i in range(0, 3):
@@ -448,126 +467,128 @@ class HyperSudokuSolver(SudokuSolver):
                 array[i][j] = liste[c]
                 c += 1
 
+        # generates bottom left additional subgrid randomly
         c = 0
         random.shuffle(liste)
         for i in range(5, 8):
             for j in range(5, 8):
                 array[i][j] = liste[c]
-                c+=1
+                c += 1
 
-    #  Funktion, um vollständig ausgefülltes Sudoku zu generieren
-    def generiereVollständigesHyperSudoku(self, array):
-        self.generiereSquares(array)
-        if self.generiereVollständigesSudoku(array):
+        return array
+
+    # method that generates a randomly completed hypersudoku (represented by array)
+    # returns True if a sudoku was generated
+    def generate_completed_hypersudoku(self, array):
+        if self.generate_completed_sudoku(self.generate_squares(array)):
             return True
         else:
             return False
 
-    #  generiert lösbares Sudoku mit gegebenen hinweisen
-    def generiereSudoku(self, array, hinweise):
+    # method that generates a solvable hypersudoku (represented by array) with given hints
+    # returns the array that was generated
+    def generate_solvable_sudoku(self, array, hints):
 
-        entferne = 81 - hinweise
+        # cells to remove are total cells (81) - hints
+        remove = 81 - hints
 
-        #  erstelle zufälliges gültiges Sudoku
-        if self.generiereVollständigesHyperSudoku(array):
-            #  Felder, die entfernt werden sollen
-            while entferne > 0:
-                #  wähle zufälliges Feld, das noch nicht leer ist
-                reihe = random.randint(0, 8)
-                spalte = random.randint(0, 8)
-                while array[reihe][spalte] == 0:
-                    reihe = random.randint(0, 8)
-                    spalte = random.randint(0, 8)
-                array[reihe][spalte] = 0
-                entferne -= 1
+        # generates completed hypersudoku
+        if self.generate_completed_hypersudoku(array):
+            # do until enough cells are removed (until there are given hints cells left)
+            while remove > 0:
+                # choose random cell that is not yet removed
+                row = random.randint(0, 8)
+                column = random.randint(0, 8)
+                while array[row][column] == 0:
+                    row = random.randint(0, 8)
+                    column = random.randint(0, 8)
+                array[row][column] = 0
+                remove -= 1
 
         return array
 
-    #  generiert eindeutig lösbares Sudoku mit gegebenen hinweisen
-    def generiereEindeutigesSudoku(self, array, hinweise):
+    # method that generates a uniquely solvable hypersudoku (represented by array) with given hints
+    # returns the array that was generated
+    def generate_unique_sudoku(self, array, hints):
 
-        entferne = 81 - hinweise
+        # cells to remove are total cells (81) - hints
+        remove = 81 - hints
 
-        #  erstelle zufälliges gültiges Sudoku
-        if self.generiereVollständigesHyperSudoku(array):
-            #  Felder, die entfernt werden sollen
-            while entferne > 0:
-                #  wähle zufälliges Feld, das noch nicht leer ist
-                reihe = random.randint(0, 8)
-                spalte = random.randint(0, 8)
-                while array[reihe][spalte] == 0:
-                    reihe = random.randint(0, 8)
-                    spalte = random.randint(0, 8)
-                #  merke den Wert des Feldes, falls das Sudoku mehr als eine Lösung hat, wenn man das Feld leert
-                merke = array[reihe][spalte]
-                array[reihe][spalte] = 0
-                entferne -= 1
+        # generates completed hypersudoku
+        if self.generate_completed_hypersudoku(array):
+            # do until enough cells are removed (until there are given hints cells left)
+            while remove > 0:
+                # choose random cell that is not yet removed
+                row = random.randint(0, 8)
+                column = random.randint(0, 8)
+                while array[row][column] == 0:
+                    row = random.randint(0, 8)
+                    column = random.randint(0, 8)
+                # remember value of removed cell in case hypersudoku has more than one solution if cell is emptied
+                remember = array[row][column]
+                array[row][column] = 0
+                remove -= 1
 
-                #  kopiere array und zähle Lösungen
-                kopieArray = []
+                # copy array as has_multiple_solutions has side effects, it changes the array parameter
+                arraycopy = []
                 for i in range(0, 9):
-                    kopieArray.append([])
+                    arraycopy.append([])
                     for j in range(0, 9):
-                        kopieArray[i].append(array[i][j])
+                        arraycopy[i].append(array[i][j])
 
-                self.lösungsAnzahl = 0
+                self.solutionCount = 0
 
-                #  wenn die Anzahl der Lösungen größer ist als 1, dann setze ursprünglichen Wert in leeres Feld
-                if self.mehrereLösungen(kopieArray):
-                    array[reihe][spalte] = merke
-                    entferne += 1
+                # if hypersudoku has multiple solutions, put initial value in empty field and increase remove by one as
+                # no cell was removed in that case
+                if self.has_multiple_solutions(arraycopy):
+                    array[row][column] = remember
+                    remove += 1
 
         return array
 
-    def gridValid(self, array):
+    def grid_is_valid(self, array):
         for i in range(0, 9):
-            if not self.rowValid(array, i):
+            if not self.row_is_valid(array, i):
                 return False
-            if not self.columnValid(array, i):
+            if not self.column_is_valid(array, i):
                 return False
         for i in range(0, 7, 3):
             for j in range(0, 7, 3):
-                if not self.boxValid(array, i, j):
+                if not self.box_is_valid(array, i, j):
                     return False
 
         for i in range(1, 6, 4):
             for j in range(1, 6, 4):
-                if not self.extraBoxValid(array, i, j):
+                if not self.additional_box_is_valid(array, i, j):
                     return False
 
         return True
 
-    def extraBoxValid(self, array, reihe, spalte):
+    def additional_box_is_valid(self, array, row, column):
         elements = []
-        #  überprüfe Teilfeld obenlinks
-        if 1 <= reihe <= 3 and 1 <= spalte <= 3:
+        # additional subgrid top left
+        if 1 <= row <= 3 and 1 <= column <= 3:
             for i in range(3):
                 for j in range(3):
-                    elements.append(array[reihe - reihe + 1 + i][spalte - spalte + 1 + j])
-        #  überprüfe Teilfeld obenrechts
-        if 1 <= reihe <= 3 and 5 <= spalte <= 7:
+                    elements.append(array[row - row + 1 + i][column - column + 1 + j])
+        # additional subgrid top right
+        if 1 <= row <= 3 and 5 <= column <= 7:
             for i in range(3):
                 for j in range(3):
-                    elements.append(array[reihe - reihe + 1 + i][spalte - (spalte + 1) % 3 + j])
-        #  überprüfe Teilfeld untenlinks
-        if 5 <= reihe <= 7 and 1 <= spalte <= 3:
+                    elements.append(array[row - row + 1 + i][column - (column + 1) % 3 + j])
+        # additional subgrid bottom left
+        if 5 <= row <= 7 and 1 <= column <= 3:
             for i in range(3):
                 for j in range(3):
-                    elements.append(array[reihe - (reihe + 1) % 3 + i][spalte - spalte + 1 + j])
-        #  überprüfe Teilfeld untenrechts
-        if 5 <= reihe <= 7 and 5 <= spalte <= 7:
+                    elements.append(array[row - (row + 1) % 3 + i][column - column + 1 + j])
+        # additional subgrid bottom right
+        if 5 <= row <= 7 and 5 <= column <= 7:
             for i in range(3):
                 for j in range(3):
-                    elements.append(array[reihe - (reihe + 1) % 3 + i][spalte - (spalte + 1) % 3 + j])
+                    elements.append(array[row - (row + 1) % 3 + i][column - (column + 1) % 3 + j])
 
         elements.sort()
         if elements == [1, 2, 3, 4, 5, 6, 7, 8, 9]:
             return True
         else:
             return False
-
-
-solv = SudokuSolver()
-if solv.generiereVollständigesSudoku(solv.grid):
-    solv.printSudoku(solv.grid)
-    print(solv.gridValid(solv.grid))

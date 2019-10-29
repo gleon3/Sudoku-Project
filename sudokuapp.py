@@ -13,13 +13,13 @@ class App(Tk):
         self.geometry("900x800+0+0")
 
         self.frame = None
-        self.ändere_fenster(Sudoku)
+        self.change_window(Sudoku)
 
-    def ändere_fenster(self, fenster_klasse):
-        neues_fenster = fenster_klasse(self)
+    def change_window(self, window_class):
+        new_window = window_class(self)
         if self.frame is not None:
             self.frame.destroy()
-        self.frame = neues_fenster
+        self.frame = new_window
         self.frame.pack(side='bottom')
 
 
@@ -31,31 +31,31 @@ class Commands:
 
         self.canvas = Canvas(self, width=610, height=610)
 
-        self.randomButton = Button(self, text="zufälliges Sudoku", command=self.neuesGrid, width=20)
-        self.lösButton = Button(self, text="löse Sudoku", command=self.löseGrid, width=20)
-        self.spielbarButton = Button(self, text="lösbares Sudoku", command=self.spielbaresGrid, width=20)
-        self.clearButton = Button(self, text="leeres Sudoku", command=self.leereGrid, width=20)
+        self.completedButton = Button(self, text="completed Sudoku", command=self.completed_grid, width=20)
+        self.solveButton = Button(self, text="solve Sudoku", command=self.solve_grid, width=20)
+        self.solvableButton = Button(self, text="solvable Sudoku", command=self.solvable_grid, width=20)
+        self.clearButton = Button(self, text="empty Sudoku", command=self.empty_grid, width=20)
 
-    def zeichneSudoku(self, array):
-        self.canvas.delete("Zahlen")
+    def draw_sudoku(self, array):
+        self.canvas.delete("digits")
         for i in range(0, 9):
             for j in range(0, 9):
                 if array[i][j] != 0:
                     y = 5 + i * 66.7 + 66.7 / 2
                     x = 5 + j * 66.7 + 66.7 / 2
-                    self.canvas.create_text(x, y, text=array[i][j], tags="Zahlen", font=("Arial", 30))
+                    self.canvas.create_text(x, y, text=array[i][j], tags="digits", font=("Arial", 30))
 
-    def zeichneGelöstesSudoku(self, arraystart, arrayend):
-        self.canvas.delete("Zahlen")
+    def draw_solved_sudoku(self, arraystart, arrayend):
+        self.canvas.delete("digits")
         for i in range(0, 9):
             for j in range(0, 9):
                 color = "black" if arrayend[i][j] == arraystart[i][j] else "blue"
                 y = 5 + i * 66.7 + 66.7 / 2
                 x = 5 + j * 66.7 + 66.7 / 2
-                self.canvas.create_text(x, y, text=arrayend[i][j], tags="Zahlen", fill=color, font=("Arial", 30))
+                self.canvas.create_text(x, y, text=arrayend[i][j], tags="digits", fill=color, font=("Arial", 30))
 
-    def leereGrid(self):
-        self.solver.setGrid([
+    def empty_grid(self):
+        self.solver.set_grid([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -67,11 +67,11 @@ class Commands:
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ])
 
-        self.zeichneSudoku(array=self.solver.getGrid())
-        self.information.config(text="leeres Sudokufeld")
+        self.draw_sudoku(array=self.solver.get_grid())
+        self.information.config(text="emtpy Sudoku")
 
-    def spielbaresGrid(self):
-        self.solver.setGrid([
+    def solvable_grid(self):
+        self.solver.set_grid([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -83,24 +83,24 @@ class Commands:
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ])
 
-        hinweise = random.randint(17, 60)
-        
-        self.zeichneSudoku(array=self.solver.generiereSudoku(array=self.solver.getGrid(), hinweise=hinweise))
-        self.information.config(text="Sudoku mit " + str(hinweise) + " Hinweisen")
+        hints = random.randint(17, 60)
 
-    def löseGrid(self):
-        self.solver.setBacktrack(0)
-        lösbaresgrid = []
+        self.draw_sudoku(array=self.solver.generate_solvable_sudoku(array=self.solver.get_grid(), hints=hints))
+        self.information.config(text="Sudoku with " + str(hints) + " hints")
+
+    def solve_grid(self):
+        self.solver.set_backtrack(0)
+        solvablegrid = []
         for i in range(0, 9):
-            lösbaresgrid.append([])
+            solvablegrid.append([])
             for j in range(0, 9):
-                lösbaresgrid[i].append(self.solver.grid[i][j])
-        if self.solver.sudokuLösen(array=self.solver.getGrid()):
-            self.zeichneGelöstesSudoku(lösbaresgrid, self.solver.getGrid())
-            self.information.config(text="Sudoku gelöst mit " + str(self.solver.getBacktrack()) + " Backtracks")
+                solvablegrid[i].append(self.solver.grid[i][j])
+        if self.solver.solve_sudoku(array=self.solver.get_grid()):
+            self.draw_solved_sudoku(solvablegrid, self.solver.get_grid())
+            self.information.config(text="solved Sudoku with " + str(self.solver.get_backtrack()) + " backtracks")
 
-    def neuesGrid(self):
-        self.solver.setGrid([
+    def completed_grid(self):
+        self.solver.set_grid([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -111,9 +111,9 @@ class Commands:
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ])
-        if self.solver.generiereVollständigesSudoku(array=self.solver.getGrid()):
-            self.zeichneSudoku(array=self.solver.getGrid())
-            self.information.config(text="zufälliges gülitges Sudoku")
+        if self.solver.generate_completed_sudoku(array=self.solver.get_grid()):
+            self.draw_sudoku(array=self.solver.get_grid())
+            self.information.config(text="randomly completed valid Sudoku")
 
 
 class Sudoku(Frame, Commands):
@@ -124,22 +124,22 @@ class Sudoku(Frame, Commands):
 
         parent.title("Sudoku")
 
-        self.sudokuGitter = PhotoImage(file="Sudokugrid.gif")
-        self.canvas.create_image(305, 305, image=self.sudokuGitter)
+        self.sudokuGrid = PhotoImage(file="Sudokugrid.gif")
+        self.canvas.create_image(305, 305, image=self.sudokuGrid)
         self.canvas.pack(side='top')
 
-        self.leereGrid()
+        self.empty_grid()
 
-        button2 = Button(self, text="HyperSudoku", command=lambda: parent.ändere_fenster(HyperSudoku), width=20)
+        button2 = Button(self, text="HyperSudoku", command=lambda: parent.change_window(HyperSudoku), width=20)
         button2.pack(side='bottom')
-        button1 = Button(self, text="XSudoku", command=lambda: parent.ändere_fenster(XSudoku), width=20)
+        button1 = Button(self, text="XSudoku", command=lambda: parent.change_window(XSudoku), width=20)
         button1.pack(side='bottom')
 
         self.information.pack(side='bottom')
 
-        self.randomButton.pack(side='bottom')
-        self.spielbarButton.pack(side='bottom')
-        self.lösButton.pack(side='bottom')
+        self.completedButton.pack(side='bottom')
+        self.solvableButton.pack(side='bottom')
+        self.solveButton.pack(side='bottom')
         self.clearButton.pack(side='bottom')
 
 
@@ -151,22 +151,22 @@ class XSudoku(Frame, Commands):
 
         parent.title("XSudoku")
 
-        self.sudokuGitter = PhotoImage(file="XSudokugrid.gif")
-        self.canvas.create_image(305, 305, image=self.sudokuGitter)
+        self.sudokuGrid = PhotoImage(file="XSudokugrid.gif")
+        self.canvas.create_image(305, 305, image=self.sudokuGrid)
         self.canvas.pack(side='top')
 
-        self.leereGrid()
+        self.empty_grid()
 
-        button2 = Button(self, text="HyperSudoku", command=lambda: parent.ändere_fenster(HyperSudoku), width=20)
+        button2 = Button(self, text="HyperSudoku", command=lambda: parent.change_window(HyperSudoku), width=20)
         button2.pack(side='bottom')
-        button1 = Button(self, text="Sudoku", command=lambda: parent.ändere_fenster(Sudoku), width=20)
+        button1 = Button(self, text="Sudoku", command=lambda: parent.change_window(Sudoku), width=20)
         button1.pack(side='bottom')
 
         self.information.pack(side='bottom')
 
-        self.randomButton.pack(side='bottom')
-        self.spielbarButton.pack(side='bottom')
-        self.lösButton.pack(side='bottom')
+        self.completedButton.pack(side='bottom')
+        self.solvableButton.pack(side='bottom')
+        self.solveButton.pack(side='bottom')
         self.clearButton.pack(side='bottom')
 
 
@@ -177,26 +177,26 @@ class HyperSudoku(Frame, Commands):
 
         parent.title("HyperSudoku")
 
-        self.sudokuGitter = PhotoImage(file="HyperSudokugrid.gif")
-        self.canvas.create_image(305, 305, image=self.sudokuGitter)
+        self.sudokuGrid = PhotoImage(file="HyperSudokugrid.gif")
+        self.canvas.create_image(305, 305, image=self.sudokuGrid)
         self.canvas.pack(side='top')
 
-        self.leereGrid()
+        self.empty_grid()
 
-        button2 = Button(self, text="XSudoku", command=lambda: parent.ändere_fenster(XSudoku), width=20)
+        button2 = Button(self, text="XSudoku", command=lambda: parent.change_window(XSudoku), width=20)
         button2.pack(side='bottom')
-        button1 = Button(self, text="Sudoku", command=lambda: parent.ändere_fenster(Sudoku), width=20)
+        button1 = Button(self, text="Sudoku", command=lambda: parent.change_window(Sudoku), width=20)
         button1.pack(side='bottom')
 
         self.information.pack(side='bottom')
 
-        self.randomButton.pack(side='bottom')
-        self.spielbarButton.pack(side='bottom')
-        self.lösButton.pack(side='bottom')
+        self.completedButton.pack(side='bottom')
+        self.solvableButton.pack(side='bottom')
+        self.solveButton.pack(side='bottom')
         self.clearButton.pack(side='bottom')
 
-    def neuesGrid(self):
-        self.solver.setGrid([
+    def completed_grid(self):
+        self.solver.set_grid([
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -207,9 +207,9 @@ class HyperSudoku(Frame, Commands):
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0]
         ])
-        if self.solver.generiereVollständigesHyperSudoku(array=self.solver.getGrid()):
-            self.zeichneSudoku(array=self.solver.getGrid())
-            self.information.config(text="zufälliges gülitges Sudoku")
+        if self.solver.generate_completed_hypersudoku(array=self.solver.get_grid()):
+            self.draw_sudoku(array=self.solver.get_grid())
+            self.information.config(text="randomly completed valid Sudoku")
 
 
 app = App()
