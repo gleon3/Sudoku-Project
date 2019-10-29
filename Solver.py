@@ -10,6 +10,7 @@ conditions that have to be fulfilled in Sudoku:
 
 # class that contains the functionalities to solve and generate Sudokus
 class SudokuSolver:
+
     def __init__(self):
         self.grid = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -135,81 +136,83 @@ class SudokuSolver:
         else:
             row, column = self.find_empty(array)
 
-        #
+        # for every possible value of cell (row, column)
         for i in self.possibilities[row][column]:
-            #  falls check_cell True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
-            #  setze leeres Feld = i
+            # if i instead of empty cell doesnt violate the Sudoku rules, put i on the empty cell
             if self.check_cell(array, row, column, i):
                 array[row][column] = i
 
-                #  falls rekursion zu einem Ende kommt, d.h kein leeres feld mehr gefunden ist, dann ist sudoku gelöst
+                # if recursion comes to an end, i.e. no empty field was found anymore, then sudoku is solved, so return
+                # true
                 if self.solve_sudoku(array):
                     return True
 
-                #  setze ursprüngliches leeres feld wieder auf leer
+                # sudoku wasn't solved with value i, so put initial emtpy cell back to empty
                 array[row][column] = 0
-        #  alle Zahlen für leeres Feld probiert und keine erfüllt die Sudoku-Regeln, d.h gehe zurück zu Feld, wo das
-        #  Lösen noch möglich war
+        # tried every possible Number for empty cell and none fulfills sudoku conditions, i.e. backtrack (so increment
+        # backtrack variable) to a cell where solving was still possible by returning false, so
+        # if self.solve_sudoku(array) will be False and empty cell is put back to empty
         self.backtrack += 1
         return False
 
-    #  Funktion, die True zurückgibt, wenn es mehr als eine Lösung gibt
+    # method that checks if a sudoku (represented by array) has multiple solutions
     def has_multiple_solutions(self, array):
-        #  wenn kein leeres Feld gefunden wurde, dann ist das Sudoku gelöst
+        # if no empty cell was found, then return True, which means sudoku is solved, so increment solutionCount,
+        # otherwise save row and column of the empty cell
         if not self.find_empty(array):
             self.solutionCount += 1
             return True
-        #  sonst gib row und column des Feldes
         else:
             row, column = self.find_empty(array)
 
+        # for every possible value of cell (row, column)
         for i in self.possibilities[row][column]:
-            #  falls check_cell True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
-            #  setze leeres Feld = i
+            # if i instead of empty cell doesnt violate the Sudoku rules, put i on the empty cell
             if self.check_cell(array, row, column, i):
                 array[row][column] = i
 
-                #  falls rekursion zu einem Ende kommt, d.h kein leeres feld mehr gefunden ist, dann ist sudoku gelöst,
-                #  also erhöht sich solutionCount um 1
+                # if recursion comes to an end, i.e. no empty field was found anymore, then sudoku is solved, but return
+                # true only if a second solution was found
                 if self.has_multiple_solutions(array):
                     if self.solutionCount >= 2:
                         return True
 
-                #  setze ursprüngliches leeres feld wieder auf leer
+                # put initial emtpy cell back to empty
                 array[row][column] = 0
-        #  alle Zahlen für leeres Feld probiert und keine erfüllt die Sudoku-Regeln, d.h gehe zurück zu Feld, wo das
-        #  Lösen noch möglich war
+        # tried every possible Number for empty cell and none fulfills sudoku conditions, i.e. backtrac
+        # to a cell where solving was still possible by returning false, so if self.has_multiple_solutions(array) will
+        # be False and empty cell is put back to empty
         return False
 
     # method that generates a randomly completed sudoku (represented by array)
     # returns True if a sudoku was generated
     def generate_completed_sudoku(self, array):
-
-        #  wenn kein leeres Feld gefunden wurde, dann ist das Sudoku gelöst
+        # if no empty cell was found, then return True, which means sudoku is generated
+        # otherwise save row and column of the empty cell and shuffle the list of possible candidates of cell so
+        # a random sudoku is generated
         if not self.find_empty(array):
             return True
-        #  sonst gib row und column des Feldes
         else:
             row, column = self.find_empty(array)
             shuffleliste = self.possibilities[row][column]
             random.shuffle(shuffleliste)
 
+        # for every possible value (stored in randomly shuffled list) of cell (row, column)
         for i in shuffleliste:
-            #  falls check_cell True ausgibt, d.h i an Stelle des leeren feldes verletzt Sudoku-Regeln nicht,
-            #  setze leeres Feld = i
+            # if i instead of empty cell doesnt violate the Sudoku rules, put i on the empty cell
             if self.check_cell(array, row, column, i):
                 array[row][column] = i
 
-                #  falls rekursion zu einem Ende kommt, d.h kein leeres feld mehr gefunden ist, dann ist sudoku gelöst, also
-                #  wurde ein vollständiges Sudoku erstellt
+                # if recursion comes to an end, i.e. no empty field was found anymore, then sudoku is completely
+                # generated, so return True
                 if self.generate_completed_sudoku(array):
-                    #  gibt True aus, wenn vollständiges Sudoku erstellt wurde
                     return True
 
-                #  setze ursprüngliches leeres feld wieder auf leer
+                # put initial emtpy cell back to empty
                 array[row][column] = 0
-        #  alle Zahlen für leeres Feld probiert und keine erfüllt die Sudoku-Regeln, d.h gehe zurück zu Feld, wo das
-        #  Lösen noch möglich war
+        # tried every possible Number for empty cell and none fulfills sudoku conditions, i.e. backtrac
+        # to a cell where solving was still possible by returning false, so if self.has_multiple_solutions(array) will
+        # be False and empty cell is put back to empty
         return False
 
     # method that generates a solvable sudoku (represented by array) with given hints
@@ -220,7 +223,7 @@ class SudokuSolver:
         remove = 81 - hints
 
         # generates completed sudoku
-        if self.generate_completed_hypersudoku(array):
+        if self.generate_completed_sudoku(array):
             # do until enough cells are removed (until there are given hints cells left)
             while remove > 0:
                 # choose random cell that is not yet removed
