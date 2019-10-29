@@ -24,10 +24,11 @@ class App(Tk):
 
 
 class Commands:
-    def __init__(self, solver, canvas, information):
+    def __init__(self, solver, canvas, information, sudokutype):
         self.solver = solver
         self.canvas = canvas
         self.information = information
+        self.sudokutype = sudokutype
 
     def draw_sudoku(self, array):
         self.canvas.delete("digits")
@@ -61,7 +62,7 @@ class Commands:
         ])
 
         self.draw_sudoku(array=self.solver.get_grid())
-        self.information.config(text="emtpy Sudoku")
+        self.information.config(text="emtpy " + self.sudokutype)
 
     def solvable_grid(self):
         self.solver.set_grid([
@@ -79,7 +80,7 @@ class Commands:
         hints = random.randint(17, 60)
 
         self.draw_sudoku(array=self.solver.generate_solvable_sudoku(array=self.solver.get_grid(), hints=hints))
-        self.information.config(text="Sudoku with " + str(hints) + " hints")
+        self.information.config(text=self.sudokutype + " with " + str(hints) + " hints")
 
     def solve_grid(self):
         self.solver.set_backtrack(0)
@@ -90,7 +91,7 @@ class Commands:
                 solvablegrid[i].append(self.solver.grid[i][j])
         if self.solver.solve_sudoku(array=self.solver.get_grid()):
             self.draw_solved_sudoku(solvablegrid, self.solver.get_grid())
-            self.information.config(text="solved Sudoku with " + str(self.solver.get_backtrack()) + " backtracks")
+            self.information.config(text="solved "+ self.sudokutype + " with " + str(self.solver.get_backtrack()) + " backtracks")
 
     def completed_grid(self):
         self.solver.set_grid([
@@ -106,7 +107,7 @@ class Commands:
         ])
         if self.solver.generate_completed_sudoku(array=self.solver.get_grid()):
             self.draw_sudoku(array=self.solver.get_grid())
-            self.information.config(text="randomly completed valid Sudoku")
+            self.information.config(text="randomly completed valid " + self.sudokutype)
 
 
 class Sudoku(Frame):
@@ -122,9 +123,8 @@ class Sudoku(Frame):
 
         self.information = Label(self, text="")
 
-        commands = Commands(Solver.SudokuSolver(), self.canvas, self.information)
-
-        commands.empty_grid()
+        commands = Commands(solver=Solver.SudokuSolver(), canvas=self.canvas, information=self.information,
+                            sudokutype="Sudoku")
 
         button2 = Button(self, text="HyperSudoku", command=lambda: parent.change_window(HyperSudoku), width=20)
         button2.pack(side='bottom')
@@ -142,6 +142,8 @@ class Sudoku(Frame):
         self.clearButton = Button(self, text="empty Sudoku", command=commands.empty_grid, width=20)
         self.clearButton.pack(side='bottom')
 
+        commands.empty_grid()
+
 
 class XSudoku(Frame, Commands):
 
@@ -155,18 +157,16 @@ class XSudoku(Frame, Commands):
         self.canvas.create_image(305, 305, image=self.sudokuGrid)
         self.canvas.pack(side='top')
 
-        self.information = Label(self, text="")
-
-        commands = Commands(Solver.XSudokuSolver(), self.canvas, self.information)
-
-        commands.empty_grid()
-
         button2 = Button(self, text="HyperSudoku", command=lambda: parent.change_window(HyperSudoku), width=20)
         button2.pack(side='bottom')
         button1 = Button(self, text="Sudoku", command=lambda: parent.change_window(Sudoku), width=20)
         button1.pack(side='bottom')
 
+        self.information = Label(self, text="")
         self.information.pack(side='bottom')
+
+        commands = Commands(solver=Solver.XSudokuSolver(), canvas=self.canvas, information=self.information,
+                            sudokutype="XSudoku")
 
         self.completedButton = Button(self, text="completed XSudoku", command=commands.completed_grid, width=20)
         self.completedButton.pack(side='bottom')
@@ -176,6 +176,8 @@ class XSudoku(Frame, Commands):
         self.solveButton.pack(side='bottom')
         self.clearButton = Button(self, text="empty XSudoku", command=commands.empty_grid, width=20)
         self.clearButton.pack(side='bottom')
+
+        commands.empty_grid()
 
 
 class HyperSudoku(Frame, Commands):
@@ -191,7 +193,8 @@ class HyperSudoku(Frame, Commands):
 
         self.information = Label(self, text="")
 
-        commands = Commands(Solver.HyperSudokuSolver(), self.canvas, self.information)
+        commands = Commands(solver=Solver.HyperSudokuSolver(), canvas=self.canvas, information=self.information,
+                            sudokutype="HyperSudoku")
 
         commands.empty_grid()
 
