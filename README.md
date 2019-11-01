@@ -28,8 +28,9 @@ python sudokuapp.py
 
 Software that is used:
 
--[Python](https://www.python.org/)
--[Tkinter](https://wiki.python.org/moin/TkInter) 
+*[Python](https://www.python.org/)
+*[Tkinter](https://wiki.python.org/moin/TkInter)
+
 ```python
 # for python version >3.0
 import tkinter
@@ -37,11 +38,6 @@ import tkinter
 # for python version <3.0
 import Tkinter
 ```
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
