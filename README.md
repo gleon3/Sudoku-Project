@@ -28,8 +28,8 @@ python sudokuapp.py
 
 Software that is used:
 
- Markup : * [Python](https://www.python.org/)
-          * [Tkinter](https://wiki.python.org/moin/TkInter)
+* [Python](https://www.python.org/)
+* [Tkinter](https://wiki.python.org/moin/TkInter)
 
 ```python
 # for python version >3.0
