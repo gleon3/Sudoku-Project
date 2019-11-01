@@ -26,7 +26,7 @@ python sudokuapp.py
 
 ## Credits
 
-Software that is used:
+used:
 
 * [Python](https://www.python.org/)
 * [Tkinter](https://wiki.python.org/moin/TkInter)
